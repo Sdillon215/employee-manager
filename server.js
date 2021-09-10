@@ -14,7 +14,8 @@ startPrompt = function () {
             'Add a department',
             'Add a role',
             'Add an employee',
-            'Update employee role'
+            'Update employee role',
+            'Exit'
         ]
     })
         .then(({ firstPrompt }) => {
@@ -38,6 +39,9 @@ startPrompt = function () {
             } 
             if (firstPrompt === 'Update employee role') {
                 console.log(7);
+            }
+            if (firstPrompt === 'Exit') {
+                db.end();
             }
         });
 };
