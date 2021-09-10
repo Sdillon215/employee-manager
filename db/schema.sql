@@ -1,8 +1,3 @@
-DROP DATABASE IF EXISTS employee_manager_db;
-
-CREATE DATABASE employee_manager_db;
-USE employee_manager_db;
-
 DROP TABLE IF EXISTS employee;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS department;
