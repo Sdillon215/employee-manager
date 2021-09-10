@@ -72,5 +72,24 @@ function allEmployees() {
 };
 
 function addDepartment() {
-    inquirer.prompt 
-}
+    inquirer.prompt([
+        {
+            name: 'newDep',
+            type: 'input',
+            message: 'What would you like to call the new department?'
+        }
+    ])
+    .then(({ newDep }) => {
+        db.query('INSERT INTO department SET ?',
+        {
+            name: newDep
+        }
+        );
+        console.log('New department added!');
+        db.query('SELECT * FROM department', (err, res) => {
+            console.table(res);
+            startPrompt();
+        });
+    });
+};
+
