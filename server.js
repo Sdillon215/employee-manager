@@ -1,6 +1,25 @@
 const inquirer = require('inquirer');
-const table = require('console.table');
-const db = require('./db/connection');
+// const db = require('./db/connection');
+
+const mysql = require('mysql2');
+require('dotenv').config();
+
+
+// connection to db
+const db = mysql.createConnection(
+    {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: 'employee_manager_db'
+    },
+);
+
+db.connect(err => {
+    if (err) throw err;
+    console.log('Connected to the employee_manager_db');
+    startPrompt();
+});
 
 startPrompt = function () {
     inquirer.prompt({
@@ -21,16 +40,15 @@ startPrompt = function () {
         .then(({ firstPrompt }) => {
             if (firstPrompt === 'View all departments') {
                 allDepartments();
-                console.log(1);
             }
             if (firstPrompt === 'View all roles') {
-                console.log(2);
+                allRoles();
             }
             if (firstPrompt === 'View all employees') {
-                console.log(3);
+                allEmployees();
             }
             if (firstPrompt === 'Add a department') {
-                console.log(4);
+                addDepartment();
             }
             if (firstPrompt === 'Add a role') {
                 console.log(5);
@@ -49,8 +67,26 @@ startPrompt = function () {
 
 
 function allDepartments() {
-    db.query(`SELECT * FROM department`, (err, res) => {
+    db.query('SELECT * FROM department', (err, res) => {
         console.table(res);
+        startPrompt();
     });
-    console.log('Made it to function');
 };
+
+function allRoles() {
+    db.query('SELECT * FROM role', (err, res) => {
+        console.table(res);
+        startPrompt();
+    });
+};
+
+function allEmployees() {
+    db.query('SELECT * FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id', (err, res) => {
+        console.table(res);
+        startPrompt();
+    });
+};
+
+function addDepartment() {
+    inquirer.prompt 
+}
