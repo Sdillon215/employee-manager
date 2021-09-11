@@ -35,7 +35,7 @@ startPrompt = function () {
                 addDepartment();
             }
             if (firstPrompt === 'Add a role') {
-                console.log(5);
+                addRole();
             }
             if (firstPrompt === 'Add an employee') {
                 console.log(6);
@@ -79,16 +79,72 @@ function addDepartment() {
             message: 'What would you like to call the new department?'
         }
     ])
-    .then(({ newDep }) => {
-        db.query('INSERT INTO department SET ?',
-        {
-            name: newDep
-        }
-        );
-        console.log('New department added!');
-        db.query('SELECT * FROM department', (err, res) => {
-            console.table(res);
-            startPrompt();
+        .then(({ newDep }) => {
+            db.query('INSERT INTO department SET ?',
+                {
+                    name: newDep
+                }
+            );
+            console.log('New department added!');
+            db.query('SELECT * FROM department', (err, res) => {
+                console.table(res);
+                startPrompt();
+            });
+        });
+};
+
+function addRole() {
+    db.query('SELECT * FROM role INNER JOIN department ON role.department_id = department.id', (err, res) => {
+        console.table(res);
+    });
+    db.query('SELECT * FROM department', (err, res) => {
+        inquirer.prompt([
+            {
+                name: 'title',
+                type: 'input',
+                message: 'What is the new roles title?',
+                validate: (title) => {
+                    if (!title) {
+                        return 'Please enter a new title'
+                    }
+                    return true;
+                }
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'Enter the salary of the new role AS A NUMBER!',
+                validate: (salary) => {
+                    if (isNaN(salary)) {
+                        return 'Please enter a number';
+                    }
+                    return true;
+                }
+            },
+            {
+                name: 'roleDep',
+                type: 'list',
+                message: 'What department',
+                choices: res.map(department => department.name)
+            }
+        ])
+        .then(({ title, salary, roleDep }) => {
+            res.map(finds => {
+                if (finds.name === roleDep) {
+                    var depId = finds.id;
+                    db.query('INSERT INTO role SET ?',
+                    {
+                        title: title,
+                        salary: salary,
+                        department_id: depId
+                    });
+                    console.log('New role added.');
+                }
+            });
+            db.query('SELECT * FROM role', (err, res) => {
+                console.table(res);
+                startPrompt();
+            });
         });
     });
 };
